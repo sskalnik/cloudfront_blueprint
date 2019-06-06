@@ -6,27 +6,36 @@
 // More info: https://www.terraform.io/docs/providers/aws/r/cloudfront_distribution.html#example-usage
 
 provider "aws" {
-  region = "us-east-1"
+  region = "${var.region}"
 }
 
-// root domain
-variable "root_domain_name" {
-  default = "cloudreach-NOT-VALID.com"
-}
-
-// www sub-domain
-variable "www_domain_name" {
-  default = "www.cloudreach-NOT-VALID.com"
-}
-
-variable "target_origin" {
-  default = "http://this-is-a-very-lengthy-url-that-is-NOT-VALID-AT-ALL.s3-website-us-northbynorthwest-1.amazonaws.com"
+data "aws_route53_zone" "external" {
+  name = "${var.root_domain_name}"
 }
 
 // Provision an ACM cert
 resource "aws_acm_certificate" "cert" {
-  domain_name       = "$var.root_domain_name"
+  domain_name       = "${var.root_domain_name}"
   validation_method = "DNS"
+}
+
+// Validate the cert before proceeding to use it for CloudFront HTTPS traffic
+// Validation option 0 = DNS
+resource "aws_route53_record" "validation" {
+  name    = "${aws_acm_certificate.cert.domain_validation_options.0.resource_record_name}"
+  type    = "${aws_acm_certificate.cert.domain_validation_options.0.resource_record_type}"
+  zone_id = "${data.aws_route53_zone.external.zone_id}"
+  records = ["${aws_acm_certificate.cert.domain_validation_options.0.resource_record_value}"]
+  ttl     = "60"
+}
+
+// The validation itself is a resource we can reference
+// Waiting on the validation to exist, then referencing the validation instead of the cert, ensures that the cert is valid before we ever use it
+resource "aws_acm_certificate_validation" "result" {
+  certificate_arn = "${aws_acm_certificate.cert.arn}"
+  validation_record_fqdns = [
+    "${aws_route53_record.validation.fqdn}",
+  ]
 }
 
 // Provision the CloudFront distribution
@@ -76,7 +85,7 @@ resource "aws_cloudfront_distribution" "www_distribution" {
   }
 
   // Include all CNAME values for which SNI should apply. See https://en.wikipedia.org/wiki/Server_Name_Indication
-  aliases = ["${var.www_domain_name}"]
+  aliases = ["${var.target_origin}", "${var.www_domain_name}"]
 
   restrictions {
     geo_restriction {
@@ -86,9 +95,12 @@ resource "aws_cloudfront_distribution" "www_distribution" {
 
   // Use an ACM cert for SSL/TLS
   viewer_certificate {
-    acm_certificate_arn = "${aws_acm_certificate.certificate.arn}"
+    // Use the ARN of the validated ACM cert
+    acm_certificate_arn      = "${aws_acm_certificate_validation.result.certificate_arn}"
     // SNI is better than wildcard certs. See https://en.wikipedia.org/wiki/Server_Name_Indication
-    ssl_support_method  = "sni-only"
+    ssl_support_method       = "sni-only"
+    // See "origin_ssl_protocols"
+    minimum_protocol_version = "TLSv1"
   }
 
   enabled = true
