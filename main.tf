@@ -9,7 +9,7 @@ provider "aws" {
   region = "${var.region}"
 }
 
-data "aws_route53_zone" "external" {
+resource "aws_route53_zone" "root" {
   name = "${var.root_domain_name}"
 }
 
@@ -24,7 +24,7 @@ resource "aws_acm_certificate" "cert" {
 resource "aws_route53_record" "validation" {
   name    = "${aws_acm_certificate.cert.domain_validation_options.0.resource_record_name}"
   type    = "${aws_acm_certificate.cert.domain_validation_options.0.resource_record_type}"
-  zone_id = "${data.aws_route53_zone.external.zone_id}"
+  zone_id = "${aws_route53_zone.root.zone_id}"
   records = ["${aws_acm_certificate.cert.domain_validation_options.0.resource_record_value}"]
   ttl     = "60"
 }
@@ -46,7 +46,7 @@ resource "aws_cloudfront_distribution" "www_distribution" {
     custom_origin_config {
       http_port              = "80"
       https_port             = "443"
-      origin_protocol_policy = "http-only"
+      origin_protocol_policy = "https-only"
       // When anyone says "SSL" they really mean "the latest HTTPS protocol", which will be TLS
       origin_ssl_protocols   = ["TLSv1", "TLSv1.1", "TLSv1.2"]
     }
