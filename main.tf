@@ -14,7 +14,7 @@ provider "aws" {
   region = "${var.region}"
 }
 
-resource "aws_route53_zone" "root" {
+data "aws_route53_zone" "root" {
   name = "${var.root_domain_name}"
 }
 
