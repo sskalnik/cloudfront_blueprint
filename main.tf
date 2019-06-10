@@ -1,8 +1,13 @@
 // This Terraform template sets up a CloudFront distribution between a "human-friendly" domain (e.g., "cloudreach.com") and 
 // an origin (e.g., "http://this-is-a-very-lengthy-url.s3-website-us-east-1.amazonaws.com").
-// ACM is used for HTTPS.
-// Route53 is used for DNS.
+//
+// ACM is used for HTTPS certificate management. The cert is attached to the CloudFront distribution.
+// Route53 is used for DNS. The hosted zone points to the CloudFront distribution.
+//
 // TODO: DNS validation options other than R53 + validation options other than DNS
+// TODO: Add WAF in front of the CloudFront distributon
+// TODO: Take a list of domain names from the .tfvars input file, and create the appropriate CNAMEs and SNI records for each
+//
 // More info: https://www.terraform.io/docs/providers/aws/r/cloudfront_distribution.html#example-usage
 
 provider "aws" {
