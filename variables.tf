@@ -18,7 +18,13 @@ variable "www_domain_name" {
 // "origin" = the URL to be cached behind CloudFront
 variable "target_origin" {
   type    = "string"
-  default = "http://this-is-a-very-lengthy-url-that-is-NOT-VALID-AT-ALL.s3-website-us-northbynorthwest-1.amazonaws.com"
+  default = "this-is-a-very-lengthy-url-that-is-NOT-VALID-AT-ALL.s3-website-us-northbynorthwest-1.amazonaws.com"
+}
+
+// "index.html" or another default page/object to be delivered when a client requests the bare domain
+variable "origin_root_object" {
+  type    = "string"
+  default = "index.html"
 }
 
 // For web sites behind CloudFront distributions, use "index.html", especially if the origin is a static page on S3
