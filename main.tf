@@ -3,9 +3,9 @@
 //
 // ACM is used for HTTPS certificate management. The cert is attached to the CloudFront distribution.
 // Route53 is used for DNS. The hosted zone points to the CloudFront distribution.
+// waf.tf sets up a basic WAF rate limiting rule, which is attached to the CloudFront distribution via a WAF ACL containing the rule.
 //
 // TODO: DNS validation options other than R53 + validation options other than DNS
-// TODO: Add WAF in front of the CloudFront distributon
 // TODO: Take a list of domain names from the .tfvars input file, and create the appropriate CNAMEs and SNI records for each
 //
 // More info: https://www.terraform.io/docs/providers/aws/r/cloudfront_distribution.html#example-usage
@@ -145,6 +145,8 @@ resource "aws_cloudfront_distribution" "www_distribution" {
     // See "origin_ssl_protocols"
     minimum_protocol_version = "TLSv1"
   }
+
+  web_acl_id = aws_waf_web_acl.rate_limit_all_acl.id
 
   enabled = true
 }
