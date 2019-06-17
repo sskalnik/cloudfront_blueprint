@@ -26,9 +26,3 @@ variable "origin_root_object" {
   type    = "string"
   default = "index.html"
 }
-
-// For web sites behind CloudFront distributions, use "index.html", especially if the origin is a static page on S3
-variable "default_root_object" {
-  type    = "string"
-  default = "index.html"
-}

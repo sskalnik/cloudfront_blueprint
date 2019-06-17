@@ -26,11 +26,11 @@ data "aws_route53_zone" "root" {
 
 // Create the "www." sub-domain within the root domain's Hosted Zone, as a CNAME pointing to the CloudFront distribution
 resource "aws_route53_record" "domain_name" {
-    zone_id = data.aws_route53_zone.root.zone_id
-    name    = "${var.www_domain_name}."
-    type    = "CNAME"
-    ttl     = "300"
-    records = [aws_cloudfront_distribution.www_distribution.domain_name]
+  zone_id = data.aws_route53_zone.root.zone_id
+  name    = "${var.www_domain_name}."
+  type    = "CNAME"
+  ttl     = "300"
+  records = [aws_cloudfront_distribution.www_distribution.domain_name]
 }
 
 // Provision an ACM cert

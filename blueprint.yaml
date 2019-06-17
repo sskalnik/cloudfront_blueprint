@@ -1,0 +1,40 @@
+--
+name: Cloudfront + ACM + WAF Blueprint
+version: 1.0.0
+origin: Cloudreach Internal (AIS)
+maintainers:
+  - shelby.skalnik@cloudreach.com
+cloud_service_providers:
+  - aws
+tags:
+  - terraform
+  - aws
+  - cloudfront
+  - acm
+  - waf
+  - route53 
+deployment:
+  pipeline:
+    repo:
+    filename:
+  prerequisites:
+    - A customer web site URL
+    - An AWS IAM role with permissions to provision resources in the customer's AWS account
+  user_parameters:
+    region:
+      type: string
+      description: AWS region
+    root_domain_name:
+      type: string
+      description: Root domain name, such as cloudreach.com
+    www_domain_name:
+      type: string
+      description: Web site sub-domain, such as www.cloudreach.com
+    target_origin:
+      type: string
+      description: Origin, aka the URL to be cached behind CloudFront
+    origin_root_object:
+      type: string
+      description: index.html or another default page/object to be delivered when a client requests the bare domain
+test_command: terraform plan -var-file=YOUR-TERRAFORM-VARIABLES-GO-HERE.tfvars
+deploy_command: terraform apply -var-file=YOUR-TERRAFORM-VARIABLES-GO-HERE.tfvars
