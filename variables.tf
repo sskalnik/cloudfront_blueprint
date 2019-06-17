@@ -26,3 +26,15 @@ variable "origin_root_object" {
   type    = "string"
   default = "index.html"
 }
+
+// Geo-restrictions per https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/georestrictions.html, if any
+variable "geo_restriction_type" {
+  type    = "string"
+  default = "none"
+}
+
+variable "geo_restriction_locations" {
+  type    = "list"
+  default = []
+}
+
