@@ -1,0 +1,26 @@
+image: hashicorp/terraform:light
+
+pipelines:
+  branches:
+    master:
+      - step:
+        script:
+          - echo 'Moving to the cloned repo directory...'
+          - cd ${BITBUCKET_CLONE_DIR}
+          - echo 'Checking Terraform version...'
+          - terraform version
+          - echo 'Updating Terraform modules if needed...'
+          - terraform get -update
+          - echo 'Terraform environment set to "test"!'
+          - export TF_VAR_environment=test
+          - echo 'Terraform initializing...'
+          - terraform init -input=false
+          - echo 'Automagically formatting source per `terraform fmt`...'
+          - terraform fmt -list=true -diff -write=true
+          - echo 'Validating source after formatting...'
+          - terraform validate -check-variables=true
+          - echo 'Creating Terraform plan...'
+          - terraform plan -out blueprint-plan -input=false
+          - echo 'Applying the Terraform plan...'
+          - terraform apply -auto-approve blueprint-plan -input=false
+          - echo 'All steps completed!'

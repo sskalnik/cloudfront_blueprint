@@ -12,6 +12,19 @@
 //
 // More info: https://www.terraform.io/docs/providers/aws/r/cloudfront_distribution.html#example-usage
 
+// Use an S3 bucket to store the Terraform state, as the Docker image or other build/plan/apply instance may be ephemeral
+// At present, the Terraform state bucket must be created before executing this Terraform recipe
+terraform {
+  required_version = ">= 0.12"
+  backend "s3" {
+    bucket  = "${local.log_bucket_prefix}-terraform-state"
+    key     = "${local.log_bucket_prefix}.tfstate"
+    region  = var.region
+    encrypt = true
+    dynamodb_table = "${local.log_bucket_prefix}-terraform-state-lock-table"
+  }
+}
+
 provider "aws" {
   region  = var.region
   version = "~> 2.13"
@@ -27,6 +40,7 @@ provider "tls" {
   version = "~> 2.0"
 }
 
+// At present, the domain name must be attached to a Route53 Zone, e.g. it must have been registered through AWS
 data "aws_route53_zone" "root" {
   name = "${var.root_domain_name}."
 }
@@ -144,6 +158,8 @@ resource "aws_cloudfront_distribution" "www_distribution" {
   // "origin" is AWS-speak for "target URL", i.e. what's behind Cloudfront and will be cached in the CloudFront distribution
   origin {
     // We need to set up a "custom" origin because otherwise CloudFront won't redirect traffic from the root domain to the www sub-domain
+    // Note that if the origin is an S3 bucket, the bucket MUST NOT be set up as a static web site!
+    // Use the custom origin config + disable direct serving of assets; instead, use an OAI and only allow CloudFront to serve the bucket's objects.
     custom_origin_config {
       http_port              = "80"
       https_port             = "443"
