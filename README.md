@@ -1,15 +1,10 @@
 # Overview
-
 Just a Terraform recipe for AWS, plus some instructions on how to use the recipe, along with an explanation of the relevant best practices.
 
 Given a "human-friendly" URL, such as "mysite.com", which may have a web sub-domain of "www.mysite.com"; and a less-human-friendly target origin such as "my-long-s3-bucket-name.s3.us-west-9000.amazonaws.com"; generate a CloudFront distribution that redirects traffic to HTTPS only, uses ACM for TLS and SNI, and uses Route53 for DNS-based validation. Cloudfront logs are sent to S3 and encrypted using a new KMS key specific to the log bucket. A new RSA key is generated, and the public key is uploaded to CloudFront for future use, e.g. for field-level encryption (the RSA private key can be exported for future use in the back-end application code to decrypt the fields). A basic "throttle DDoSes and traffic surges of 2000+ requests per 5 minutes" WAF rule is created, and attached to the CloudFront distribution via WAF ACL.
 
-## Who is the target user?
-The customers apropos this project are (a) any Cloudreach clients who need "typical best practices" applied to their AWS infrastructure, and (b) Cloudreach employees tasked with applying those "best practices", e.g. to an LZ, for the client.
 
-
-
-# Pre-Requisites and Requirements
+# Prerequisites and Requirements
 
 ## Prerequisites
 AWS account credentials necessary for Terraform to provision arbitrary resources

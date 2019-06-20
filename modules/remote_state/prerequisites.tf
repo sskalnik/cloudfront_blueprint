@@ -7,9 +7,8 @@ provider "aws" {
   version = "~> 2.13"
 }
 
-// TODO: move this to a "common.tf" file
-locals {
-  log_bucket_prefix = "${replace(var.root_domain_name,".","-dot-")}"
+module "common" {
+  source = "../common"
 }
 
 // Use an S3 bucket to store the Terraform state, as the Docker image or other build/plan/apply instance may be ephemeral

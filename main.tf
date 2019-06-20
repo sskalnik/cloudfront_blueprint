@@ -1,4 +1,4 @@
-// This Terraform template sets up a CloudFront distribution between a "human-friendly" domain (e.g., "cloudreach.com") and 
+// This Terraform template sets up a CloudFront distribution between a "human-friendly" domain (e.g., "terraform-test-bucket.com") and 
 // an origin (e.g., "http://this-is-a-very-lengthy-url.s3-website-us-east-1.amazonaws.com").
 //
 // ACM is used for HTTPS certificate management. The cert is attached to the CloudFront distribution.
@@ -144,6 +144,7 @@ resource "aws_acm_certificate_validation" "result" {
     aws_route53_record.cert_validation.fqdn,
     aws_route53_record.www_cert_validation.fqdn,
   ]
+  // ACM certs for CloudFront must be created in US East 1 at the time of writing
   provider = aws.acm_region
   // If this takes more than 5 minutes, something is probably wrong. Set to 10 minutes to allow for leeway. Default is 45 minutes.
   timeouts {

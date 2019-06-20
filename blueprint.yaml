@@ -1,9 +1,8 @@
 --
-name: Cloudfront + ACM + WAF Blueprint
+name: "Cloudfront + ACM + WAF Blueprint"
 version: 1.0.0
-origin: Cloudreach Internal (AIS)
 maintainers:
-  - shelby.skalnik@cloudreach.com
+  - sskalnik@sskalnik.com
 cloud_service_providers:
   - aws
 tags:
@@ -26,10 +25,10 @@ deployment:
       description: AWS region
     root_domain_name:
       type: string
-      description: Root domain name, such as cloudreach.com
+      description: Root domain name, such as terraform-test-bucket.com
     www_domain_name:
       type: string
-      description: Web site sub-domain, such as www.cloudreach.com
+      description: Web site sub-domain, such as www.terraform-test-bucket.com
     target_origin:
       type: string
       description: Origin, aka the URL to be cached behind CloudFront

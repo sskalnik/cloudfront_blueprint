@@ -6,13 +6,13 @@ variable "region" {
 // root domain
 variable "root_domain_name" {
   type    = "string"
-  default = "cloudreach-NOT-VALID.com"
+  default = "terraform-test-bucket.com"
 }
 
 // www sub-domain
 variable "www_domain_name" {
   type    = "string"
-  default = "www.cloudreach-NOT-VALID.com"
+  default = "www.terraform-test-bucket.com"
 }
 
 // "origin" = the URL to be cached behind CloudFront
